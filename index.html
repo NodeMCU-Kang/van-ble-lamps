@@ -8,7 +8,7 @@
     .switch {
       position: relative;
       display: inline-block;
-      width: 100px;
+      width: 150px;
       height: 60px;
     }
 
@@ -21,10 +21,10 @@
     .slider {
       position: absolute;
       cursor: pointer;
-      top: -25px;
+      top: -40px;
       left: 0;
       right: 0;
-      bottom: 33px;
+      bottom: 38px;
       background-color: #ccc;
       -webkit-transition: .4s;
       transition: .4s;
@@ -33,10 +33,10 @@
     .slider:before {
       position: absolute;
       content: "";
-      height: 40px;
-      width: 40px;
+      height: 45px;
+      width: 45px;
       left: 10px;
-      bottom: 6px;
+      bottom: 8px;
       background-color: white;
       -webkit-transition: .4s;
       transition: .4s;
@@ -51,14 +51,14 @@
     }
 
     input:checked + .slider:before {
-      -webkit-transform: translateX(40px);
-      -ms-transform: translateX(40px);
-      transform: translateX(40px);
+      -webkit-transform: translateX(82px);
+      -ms-transform: translateX(82px);
+      transform: translateX(82px);
     }
 
     /* Rounded sliders */
     .slider.round {
-      border-radius: 34px;
+      border-radius: 50px;
     }
 
     .slider.round:before {
@@ -70,19 +70,19 @@
   <body>
     <div style="text-align:center; font-family: Arial, Helvetica, sans-serif">
       <div style="height:100px"></div>
-      <label style="font-size:48px">LED Ring Controller</label>
+      <label style="font-size:76px">LED Ring Controller</label>
       <div style="height:100px"></div>
 
       <div id="lamp1" >
-        <label style="font-size:40px;">Lamp #1</label>
+        <label style="font-size:64px;">Lamp #1</label>
         <label class="switch" style="margin-left:20px">
           <input onChange="lampSwichToggle(1)" id="lamp_switch1" type="checkbox">
           <span class="slider round"></span>
         </label>    
 
         <span style="margin-left:30px">
-          <label style="font-size:40px">Color:</label>
-          <input style="height:48px; width:80px" onChange="" type="color" id="colorpicker" value="#0000ff">
+          <label style="font-size:64px">Color:</label>
+          <input style="height:60px; width:100px;" onChange="" type="color" id="colorpicker" value="#0000ff">
         </span>
 
       </div>
