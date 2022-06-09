@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>LED Ring Controller</title>
+    <style>
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 100px;
+      height: 60px;
+    }
+
+    .switch input { 
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: -25px;
+      left: 0;
+      right: 0;
+      bottom: 33px;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 40px;
+      width: 40px;
+      left: 10px;
+      bottom: 6px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(40px);
+      -ms-transform: translateX(40px);
+      transform: translateX(40px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+    </style>    
+  </head>
+
+  <body>
+    <div style="text-align:center; font-family: Arial, Helvetica, sans-serif">
+      <div style="height:100px"></div>
+      <label style="font-size:48px">LED Ring Controller</label>
+      <div style="height:100px"></div>
+
+      <div id="lamp1" >
+        <label style="font-size:40px;">Lamp #1</label>
+        <label class="switch" style="margin-left:20px">
+          <input onChange="lampSwichToggle(1)" id="lamp_switch1" type="checkbox">
+          <span class="slider round"></span>
+        </label>    
+
+        <span style="margin-left:30px">
+          <label style="font-size:40px">Color:</label>
+          <input style="height:48px; width:80px" onChange="" type="color" id="colorpicker" value="#0000ff">
+        </span>
+
+      </div>
+      
+    </div>
+
+<!--    <script src="assets/js/jquery-3.5.0.min.js"></script>-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      
+      // Create a client instance
+      //client = new Paho.MQTT.Client("host", port,"client_id");
+      //Example client = new Paho.MQTT.Client("m11.cloudmqtt.com", 32903, "web_" + parseInt(Math.random() * 100, 10));
+      //client = new Paho.MQTT.Client("driver.cloudmqtt.com", 38578, "web_" + parseInt(Math.random() * 100, 10));
+      client = new Paho.MQTT.Client("3a8247b564f04a0a81e7e1d070882e1e.s1.eu.hivemq.cloud", 8884, "web_" + parseInt(Math.random() * 100, 10));
+
+      // set callback handlers
+      client.onConnectionLost = onConnectionLost;
+      client.onMessageArrived = onMessageArrived;
+      var options = {
+        useSSL: true,
+        userName: "ugym-devices",
+        password: "Ab-123456",        
+        onSuccess:onConnect,
+        onFailure:doFail
+      }
+
+      // connect the client
+      client.connect(options);
+      
+      function lampSwichToggle(lamp_num){
+        var lamp_switch="#lamp_switch"+lamp_num.toString();
+        var message={number:lamp_num, status:""}
+        message.status=($(lamp_switch).prop('checked'))?"on":"off";
+        console.log(message);        
+        publish("lamp_status", JSON.stringify(message));
+      }
+      
+
+      // called when the client connects
+      function onConnect() {
+        // Once a connection has been made, make a subscription and send a message.
+        console.log("onConnect");
+        $("#connectStatus").text("Connnected")
+        
+        client.subscribe("lamp_status/#");
+        
+        var message={number:0, status:"online"}
+        publish("lamp_status", JSON.stringify(message));
+      }
+
+      function doFail(e){
+        console.log(e);
+      }
+
+      // called when the client loses its connection
+      function onConnectionLost(responseObject) {
+        if (responseObject.errorCode !== 0) {
+          console.log("onConnectionLost:"+responseObject.errorMessage);
+        }
+      }
+
+      // called when a message arrives
+      function onMessageArrived(message) {
+        console.log("onMessageArrived:"+message.payloadString);
+        var msgs = $("#messages").text();
+        $("#messages").text(msgs+"\n"+message.payloadString);
+      }
+      
+      
+      function publish(topic, message){
+        message = new Paho.MQTT.Message(message);
+        message.destinationName = topic;
+        client.send(message);      
+      }
+    </script>    
+
+  </body>
+
+</html>
